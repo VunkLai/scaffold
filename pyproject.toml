@@ -9,6 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.9"
 click = "^8.1.3"
+toml = "^0.10.2"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.6.0"
@@ -34,7 +35,7 @@ disable = [
 
 [tool.pylint.basic]
 good-names = [
-  'os',
+  'fr',
   '_',
 ]
 
