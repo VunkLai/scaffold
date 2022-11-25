@@ -4,8 +4,9 @@ import shutil
 from pathlib import Path
 
 import pytest
-import toml
+import toml  # type: ignore
 from click.testing import CliRunner
+from git import Git
 
 from scaffold.main import scaffold
 
@@ -53,3 +54,10 @@ def test_default_python_project(folder_for_test):
         assert data["tool"]["isort"] == {"profile": "black"}
 
         assert "pylint" in data["tool"]
+
+    git_folder = project / ".git"
+    assert git_folder.exists()
+
+    git = Git(PROJECT_NAME)
+    assert "* main" in git.branch()
+    assert "feat: initial commit" in git.log()

@@ -1,4 +1,5 @@
 import click
+from git import Repo
 
 from .tools import Poetry, PyProject
 
@@ -32,3 +33,8 @@ def python(project_name: str) -> None:
         },
     )
     pyproject.save()
+
+    repo = Repo.init(project_name)
+    repo.git.add(all=True)
+    repo.git.commit("-m", "feat: initial commit")
+    repo.git.branch("-m", "main")
