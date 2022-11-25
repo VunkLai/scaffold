@@ -21,3 +21,10 @@ class Poetry:
             subprocess.run(cmd, cwd=self.project_name, check=False)
         except subprocess.CalledProcessError:
             sys.exit(1)
+
+    def remove(self, dependency: str) -> None:
+        try:
+            cmd = ["poetry", "remove", dependency]
+            subprocess.run(cmd, cwd=self.project_name, check=False)
+        except subprocess.CalledProcessError:
+            sys.exit(1)

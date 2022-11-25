@@ -7,10 +7,14 @@ from .tools import Poetry, PyProject
 class Dependencies:
     default_tools = ["ipython", "isort", "black", "pytest", "mypy"]
 
+    django = ["django", "djangorestframework", "django-cors-headers"]
+    django_tools = ["pylint=2.14.5", "pylint-django", "pytest-django"]
+
 
 @click.command()
 @click.argument("project_name", nargs=1, type=str, default=".")
-def python(project_name: str) -> None:
+@click.option("-d", "--django", is_flag=True)
+def python(project_name: str, django: bool) -> None:
     project = Poetry(project_name)
     project.new()
     project.add(Dependencies.default_tools, dev=True)
@@ -38,3 +42,10 @@ def python(project_name: str) -> None:
     repo.git.add(all=True)
     repo.git.commit("-m", "feat: initial commit")
     repo.git.branch("-m", "main")
+
+    if django:
+        project.add(Dependencies.django)
+        # fixme: pylint 2.15 causes django.core.exceptions.Improperlyconfigured to be raised
+        # https://github.com/PyCQA/pylint-django/issues/370
+        project.remove("pylint")
+        project.add(Dependencies.django_tools, dev=True)

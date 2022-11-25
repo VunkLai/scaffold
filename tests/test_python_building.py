@@ -15,25 +15,13 @@ PROJECT_NAME = "fake-project-name"
 
 @pytest.fixture()
 def folder_for_test(scope="function"):
-    shutil.rmtree(PROJECT_NAME, ignore_errors=True)
-    yield PROJECT_NAME
+    try:
+        yield PROJECT_NAME
+    finally:
+        shutil.rmtree(PROJECT_NAME, ignore_errors=True)
 
 
-def dependencies_check(poetry):
-    assert PROJECT_NAME == poetry["name"]
-
-    dependencies = poetry["dependencies"]
-    assert "python" in dependencies
-
-    dev_dependencies = poetry["group"]["dev"]["dependencies"]
-    assert "ipython" in dev_dependencies
-    assert "isort" in dev_dependencies
-    assert "black" in dev_dependencies
-    assert "pytest" in dev_dependencies
-    assert "mypy" in dev_dependencies
-
-
-def test_default_python_project(folder_for_test):
+def test_default_python_project(folder_for_test) -> None:
     runner = CliRunner()
     result = runner.invoke(scaffold, ["python", folder_for_test])
     assert result.exit_code == 0
@@ -48,7 +36,66 @@ def test_default_python_project(folder_for_test):
         data = toml.load(fr)
 
         assert "poetry" in data["tool"]
-        dependencies_check(data["tool"]["poetry"])
+        poetry = data["tool"]["poetry"]
+        assert PROJECT_NAME == poetry["name"]
+
+        dependencies = poetry["dependencies"]
+        assert "python" in dependencies
+
+        dev_dependencies = poetry["group"]["dev"]["dependencies"]
+        assert "ipython" in dev_dependencies
+        assert "isort" in dev_dependencies
+        assert "black" in dev_dependencies
+        assert "pytest" in dev_dependencies
+        assert "mypy" in dev_dependencies
+
+        assert "isort" in data["tool"]
+        assert data["tool"]["isort"] == {"profile": "black"}
+
+        assert "pylint" in data["tool"]
+
+    git_folder = project / ".git"
+    assert git_folder.exists()
+
+    git = Git(PROJECT_NAME)
+    assert "* main" in git.branch()
+    assert "feat: initial commit" in git.log()
+
+
+def test_django_project(folder_for_test) -> None:
+    runner = CliRunner()
+    result = runner.invoke(scaffold, ["python", "--django", folder_for_test])
+    assert result.exit_code == 0
+
+    project = Path(PROJECT_NAME)
+    assert project.exists()
+
+    pyproject = project / "pyproject.toml"
+    assert pyproject.exists()
+
+    with pyproject.open("r") as fr:
+        data = toml.load(fr)
+
+        assert "poetry" in data["tool"]
+        poetry = data["tool"]["poetry"]
+        assert PROJECT_NAME == poetry["name"]
+
+        dependencies = poetry["dependencies"]
+        assert "python" in dependencies
+        assert "Django" in dependencies
+        assert "djangorestframework" in dependencies
+        assert "django-cors-headers" in dependencies
+
+        dev_dependencies = poetry["group"]["dev"]["dependencies"]
+        assert "ipython" in dev_dependencies
+        assert "isort" in dev_dependencies
+        assert "black" in dev_dependencies
+        assert "pytest" in dev_dependencies
+        assert "mypy" in dev_dependencies
+        assert "pytest-django" in dev_dependencies
+        assert "pylint-django" in dev_dependencies
+        assert "pylint" in dev_dependencies
+        assert dev_dependencies["pylint"] == "2.14.5"
 
         assert "isort" in data["tool"]
         assert data["tool"]["isort"] == {"profile": "black"}
