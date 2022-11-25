@@ -6,7 +6,7 @@ class Poetry:
     def __init__(self, project_name: str) -> None:
         self.project_name = project_name
 
-    def create(self) -> None:
+    def new(self) -> None:
         try:
             subprocess.run(["poetry", "new", self.project_name], check=True)
         except subprocess.CalledProcessError:

@@ -12,7 +12,7 @@ class Dependencies:
 @click.argument("project_name", nargs=1, type=str, default=".")
 def python(project_name: str) -> None:
     project = Poetry(project_name)
-    project.create()
+    project.new()
     project.add(Dependencies.default_tools, dev=True)
 
     pyproject = PyProject(project_name)
