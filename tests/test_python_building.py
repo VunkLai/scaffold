@@ -18,6 +18,20 @@ def folder_for_test(scope="function"):
     yield PROJECT_NAME
 
 
+def dependencies_check(poetry):
+    assert PROJECT_NAME == poetry["name"]
+
+    dependencies = poetry["dependencies"]
+    assert "python" in dependencies
+
+    dev_dependencies = poetry["group"]["dev"]["dependencies"]
+    assert "ipython" in dev_dependencies
+    assert "isort" in dev_dependencies
+    assert "black" in dev_dependencies
+    assert "pytest" in dev_dependencies
+    assert "mypy" in dev_dependencies
+
+
 def test_default_python_project(folder_for_test):
     runner = CliRunner()
     result = runner.invoke(scaffold, ["python", folder_for_test])
@@ -32,15 +46,10 @@ def test_default_python_project(folder_for_test):
     with pyproject.open("r") as fr:
         data = toml.load(fr)
 
-        poetry = data["tool"]["poetry"]
-        assert PROJECT_NAME == poetry["name"]
+        assert "poetry" in data["tool"]
+        dependencies_check(data["tool"]["poetry"])
 
-        dependencies = poetry["dependencies"]
-        assert "python" in dependencies
+        assert "isort" in data["tool"]
+        assert data["tool"]["isort"] == {"profile": "black"}
 
-        dev_dependencies = poetry["group"]["dev"]["dependencies"]
-        assert "ipython" in dev_dependencies
-        assert "isort" in dev_dependencies
-        assert "black" in dev_dependencies
-        assert "pytest" in dev_dependencies
-        assert "mypy" in dev_dependencies
+        assert "pylint" in data["tool"]

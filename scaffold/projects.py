@@ -1,6 +1,6 @@
 import click
 
-from .tools import Poetry
+from .tools import Poetry, PyProject
 
 
 class Dependencies:
@@ -13,3 +13,22 @@ def python(project_name: str) -> None:
     project = Poetry(project_name)
     project.create()
     project.add(Dependencies.default_tools, dev=True)
+
+    pyproject = PyProject(project_name)
+    pyproject.add("isort", {"profile": "black"})
+    pyproject.add(
+        "pylint",
+        {
+            "messages_control": {
+                "max-line-length": 120,
+                "disable": [
+                    "missing-module-docstring",
+                    "missing-class-docstring",
+                    "missing-function-docstring",
+                    "fixme",
+                ],
+            },
+            "basic": {"good-names": ["_"]},
+        },
+    )
+    pyproject.save()
