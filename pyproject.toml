@@ -45,7 +45,7 @@ scaffold = 'scaffold.main:scaffold'
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.0.1"
+version = "0.1.0"
 tag_format = "$version"
 
 [build-system]
