@@ -167,3 +167,5 @@ cython_debug/
 
 # test-cache
 fake-project-name/
+fake-python-name/
+fake-django-name/

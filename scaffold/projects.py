@@ -1,13 +1,23 @@
 import shutil
 
 import click
+import requests
+import yaml
 from git import Repo
 
 from .tools import Poetry, PyProject
 
 
 class Dependencies:
-    default_tools = ["ipython", "isort", "black", "pytest", "mypy"]
+    default_tools = [
+        "ipython",
+        "isort",
+        "black",
+        "pytest",
+        "mypy",
+        "Commitizen",
+        "pre-commit",
+    ]
 
     django = ["django", "djangorestframework", "django-cors-headers"]
     django_tools = ["pylint=2.14.5", "pylint-django", "pytest-django"]
@@ -33,6 +43,7 @@ def python(project_name: str, django: bool) -> None:
                     "missing-class-docstring",
                     "missing-function-docstring",
                     "fixme",
+                    "too-few-public-methods",
                 ],
             },
             "basic": {"good-names": ["_"]},
@@ -40,7 +51,15 @@ def python(project_name: str, django: bool) -> None:
     )
     pyproject.save()
 
+    url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
+    response = requests.get(url, timeout=10)
+    with open(f"{project_name}/.gitignore", "w", encoding="utf-8") as fw:
+        fw.write("# Github gitignore template\n")
+        fw.write(f"# {url}\n")
+        fw.write(response.text)
+
     repo = Repo.init(project_name)
+
     repo.git.add(all=True)
     repo.git.commit("-m", "feat: initial commit")
     repo.git.branch("-m", "main")
@@ -103,3 +122,33 @@ def python(project_name: str, django: bool) -> None:
             },
         )
         pyproject.save()
+
+        repo.git.add(all=True)
+        repo.git.commit("-m", "feat: initial django project")
+
+    # project.run(["cz", "init"])
+    pyproject = PyProject(project_name)
+    pyproject.add(
+        "commitizen",
+        {
+            "name": "cz_conventional_commits",
+            "version": "0.0.1",
+            "tag_format": "$version",
+        },
+    )
+    pyproject.save()
+
+    commitize_hook = {
+        "hooks": [{"id": "commitizen"}],
+        "repo": "https://github.com/commitizen-tools/commitizen",
+        "rev": "v2.37.0",
+    }
+    pre_commit_config = {"repos": [commitize_hook]}
+    with open(f"{project_name}/.pre-commit-config.yaml", "w", encoding="utf-8") as fw:
+        yaml.dump(pre_commit_config, fw)
+
+    repo.git.add(all=True)
+    repo.git.commit("-m", "build: import commitizen and pre-commit")
+
+    project.run(["pre-commit", "install"])
+    project.run(["cz", "bump", "-ch", "--yes", "0.1.0"])
