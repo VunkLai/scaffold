@@ -18,16 +18,18 @@ class Poetry:
             if dev:
                 cmd.extend(["--group", "dev"])
             cmd.extend(dependencies)
-            subprocess.run(cmd, cwd=self.project_name, check=False)
+            subprocess.run(cmd, cwd=self.project_name, check=True)
         except subprocess.CalledProcessError:
             sys.exit(1)
 
     def remove(self, dependency: str) -> None:
         try:
             cmd = ["poetry", "remove", dependency]
-            subprocess.run(cmd, cwd=self.project_name, check=False)
+            subprocess.run(cmd, cwd=self.project_name, check=True)
         except subprocess.CalledProcessError:
             sys.exit(1)
 
-    def invoke(self, cmd: str) -> None:
-        subprocess.run(cmd, cwd=self.project_name, check=False, shell=True)
+    def run(self, args: list[str]) -> None:
+        cmd = ["poetry", "run"]
+        cmd.extend(args)
+        subprocess.run(cmd, cwd=self.project_name, check=True)

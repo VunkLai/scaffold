@@ -59,7 +59,7 @@ def python(project_name: str, django: bool) -> None:
 
         # create django project
         django_project_name = "server"
-        project.invoke(f"django-admin startproject {django_project_name}")
+        project.run(["django-admin", "startproject", django_project_name])
 
         pyproject = PyProject(project_name)
         pyproject.add(
