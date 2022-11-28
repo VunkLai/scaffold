@@ -1,9 +1,10 @@
 # pylint: disable=unused-argument, redefined-outer-name
 
+import shutil
 from pathlib import Path
 
 import pytest
-import toml  # type: ignore
+import tomli
 from click.testing import CliRunner
 from git import Git
 
@@ -31,8 +32,8 @@ def test_default_python_project(folder_for_test) -> None:
     pyproject = project / "pyproject.toml"
     assert pyproject.exists()
 
-    with pyproject.open("r") as fr:
-        data = toml.load(fr)
+    with pyproject.open("rb") as fr:
+        data = tomli.load(fr)
 
         assert "poetry" in data["tool"]
         poetry = data["tool"]["poetry"]
@@ -72,8 +73,8 @@ def test_django_project(folder_for_test) -> None:
     pyproject = project / "pyproject.toml"
     assert pyproject.exists()
 
-    with pyproject.open("r") as fr:
-        data = toml.load(fr)
+    with pyproject.open("rb") as fr:
+        data = tomli.load(fr)
 
         assert "poetry" in data["tool"]
         poetry = data["tool"]["poetry"]
