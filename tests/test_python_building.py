@@ -1,6 +1,5 @@
 # pylint: disable=unused-argument, redefined-outer-name
 
-import shutil
 from pathlib import Path
 
 import pytest
@@ -98,9 +97,17 @@ def test_django_project(folder_for_test) -> None:
         assert dev_dependencies["pylint"] == "2.14.5"
 
         assert "isort" in data["tool"]
-        assert data["tool"]["isort"] == {"profile": "black"}
+        assert data["tool"]["isort"]["profile"] == "black"
+        assert "known_django" in data["tool"]["isort"]
+        assert "sections" in data["tool"]["isort"]
 
         assert "pylint" in data["tool"]
+        assert "main" in data["tool"]["pylint"]
+
+        assert "pytest" in data["tool"]
+        assert "ini_options" in data["tool"]["pytest"]
+        assert "DJANGO_SETTINGS_MODULE" in data["tool"]["pytest"]["ini_options"]
+        assert "python_files" in data["tool"]["pytest"]["ini_options"]
 
     git_folder = project / ".git"
     assert git_folder.exists()
@@ -108,3 +115,9 @@ def test_django_project(folder_for_test) -> None:
     git = Git(PROJECT_NAME)
     assert "* main" in git.branch()
     assert "feat: initial commit" in git.log()
+
+    django_folder = project / "server"
+    assert django_folder.exists()
+
+    manage = django_folder / "manage.py"
+    assert manage.exists()

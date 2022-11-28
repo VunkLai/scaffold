@@ -28,3 +28,6 @@ class Poetry:
             subprocess.run(cmd, cwd=self.project_name, check=False)
         except subprocess.CalledProcessError:
             sys.exit(1)
+
+    def invoke(self, cmd: str) -> None:
+        subprocess.run(cmd, cwd=self.project_name, check=False, shell=True)
