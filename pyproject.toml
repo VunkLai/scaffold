@@ -42,11 +42,12 @@ disable = [
 [tool.pylint.basic]
 good-names = [
   'fr',
+  'fw',
   '_',
 ]
 
 [tool.poetry.scripts]
-scaffold = 'scaffold.main:scaffold'
+scaffold = 'scaffold.commands:entrypoint'
 
 [tool.commitizen]
 name = "cz_conventional_commits"
