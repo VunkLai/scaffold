@@ -1,5 +1,5 @@
 from structure.builders.builder import Builder
-from structure.products.python_products import PythonProduct
+from structure.products import PythonProduct
 
 
 class PythonBuilder(Builder):
