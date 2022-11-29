@@ -25,6 +25,7 @@ mypy = "^0.991"
 types-requests = "^2.28.11.5"
 # test
 pytest = "^7.2.0"
+pytest-mock = "^3.10.0"
 
 [tool.isort]
 profile = "black"
@@ -50,10 +51,6 @@ good-names = [
 scaffold = 'scaffold.commands:entrypoint'
 
 [tool.commitizen]
-name = "cz_conventional_commits"
-version = "0.1.1"
-tag_format = "$version"
-
 [build-system]
 requires = ["setuptools", "poetry-core"]
 build-backend = "poetry.core.masonry.api"
