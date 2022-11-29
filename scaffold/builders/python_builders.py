@@ -1,7 +1,7 @@
 import shutil
 
-from structure.builders.builder import Builder
-from structure.products import PythonProduct
+from scaffold.builders.builder import Builder
+from scaffold.products import PythonProduct
 
 
 class PythonBuilder(Builder):

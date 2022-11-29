@@ -1,7 +1,7 @@
 import click
 
-from structure.builders import DjangoBuilder, PythonBuilder, VSCodeBuilder
-from structure.directors import Scaffold
+from scaffold.builders import DjangoBuilder, PythonBuilder, VSCodeBuilder
+from scaffold.directors import Scaffold
 
 
 @click.command()

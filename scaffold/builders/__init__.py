@@ -1,5 +1,5 @@
-from structure.builders.python_builders import DjangoBuilder, PythonBuilder
-from structure.builders.vscode_builders import VSCodeBuilder
+from scaffold.builders.python_builders import DjangoBuilder, PythonBuilder
+from scaffold.builders.vscode_builders import VSCodeBuilder
 
 __all__ = [
     "PythonBuilder",

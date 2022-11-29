@@ -1,4 +1,4 @@
-from structure.products.product import Product
+from scaffold.products.product import Product
 
 
 class VSCodeProduct(Product):

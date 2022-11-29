@@ -1,7 +1,6 @@
 from typing import Union
 
-from builders.python_builders import PythonBuilder
-from builders.vscode_builders import VSCodeBuilder
+from scaffold.builders import PythonBuilder, VSCodeBuilder
 
 
 class BuilderError(Exception):

@@ -1,5 +1,5 @@
-from structure.builders.builder import Builder
-from structure.products import VSCodeProduct
+from scaffold.builders.builder import Builder
+from scaffold.products import VSCodeProduct
 
 
 class VSCodeBuilder(Builder):

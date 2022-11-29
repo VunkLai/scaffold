@@ -1,5 +1,5 @@
-from structure.products.product import Product
-from structure.products.tools import Commitizen, Git, Poetry, TomlConfiguration
+from scaffold.products.product import Product
+from scaffold.products.tools import Commitizen, Git, Poetry, TomlConfiguration
 
 
 class PythonProduct(Product):
@@ -30,5 +30,5 @@ class PythonProduct(Product):
         self.git.add()
         self.run("cz", "bump", "-ch", "--yes", version)
 
-    def run(self, *options: list[str]) -> None:
+    def run(self, *options: str) -> None:
         self.poetry.run(*options)
