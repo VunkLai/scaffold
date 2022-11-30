@@ -1,7 +1,7 @@
 # pylint: disable=unused-argument, redefined-outer-name
-
+import shutil
 from typing import Generator
-from unittest import mock
+from unittest.mock import ANY, MagicMock, call
 
 import pytest
 from pytest_mock import MockerFixture
@@ -16,8 +16,20 @@ IS_DEV = {"dev": True}
 
 @pytest.fixture(scope="function")
 def builder() -> Generator:
-    builder = PythonBuilder()
-    yield builder
+    try:
+        builder = PythonBuilder()
+        yield builder
+    finally:
+        shutil.rmtree(PROJECT_NAME, ignore_errors=True)  # just in case
+
+
+@pytest.fixture(scope="function")
+def product(mocker: MockerFixture) -> Generator:
+    product = mocker.patch("scaffold.products.python_products.PythonProduct")
+    product.attach_mock(mocker.patch.object(PythonProduct, "create"), "create")
+    product.attach_mock(mocker.patch.object(PythonProduct, "install"), "install")
+    product.attach_mock(mocker.patch.object(PythonProduct, "configure"), "configure")
+    yield product
 
 
 def test_python_builder(mocker: MockerFixture):
@@ -29,51 +41,33 @@ def test_python_builder(mocker: MockerFixture):
     assert isinstance(python_builder.product, PythonProduct)
 
 
-def test_python_initialize(mocker: MockerFixture, builder):
-    product_create = mocker.patch.object(PythonProduct, "create")
-
+def test_python_initialize(product: MagicMock, builder: PythonBuilder):
     builder.initialize(PROJECT_NAME)
 
-    assert product_create.call_count == 1
-    assert product_create.call_args == mock.call(PROJECT_NAME)
+    assert len(product.method_calls) == 1
+    assert product.method_calls[0] == call.create(PROJECT_NAME)
 
 
-def test_python_install_dependencies(mocker: MockerFixture, builder: PythonBuilder):
-    product_install = mocker.patch.object(PythonProduct, "install")
-
+def test_python_install_dependencies(product: MagicMock, builder: PythonBuilder):
     builder.install_dependencies()
 
-    assert product_install.call_count == 1
-    assert product_install.call_args == mock.call("ipython", dev=True)
+    assert len(product.method_calls) == 1
+    assert product.method_calls[0] == call.install("ipython", dev=True)
 
 
-def test_python_install_formatter(mocker: MockerFixture, builder: PythonBuilder):
-    product_install = mocker.patch.object(PythonProduct, "install")
-    product_configure = mocker.patch.object(PythonProduct, "configure")
-
+def test_python_install_formatter(product: MagicMock, builder: PythonBuilder):
     builder.install_formatter()
 
-    assert product_install.call_count == 2
-    assert product_install.call_args_list == [
-        mocker.call("black", dev=True),
-        mocker.call("isort", dev=True),
-    ]
-
-    assert product_configure.call_count == 1
-    assert "isort" in product_configure.call_args.args
+    assert len(product.method_calls) == 3
+    assert product.method_calls[0] == call.install("black", dev=True)
+    assert product.method_calls[1] == call.install("isort", dev=True)
+    assert product.method_calls[2] == call.configure("isort", ANY)
 
 
-def test_python_install_linter(mocker: MockerFixture, builder: PythonBuilder):
-    product_install = mocker.patch.object(PythonProduct, "install")
-    product_configure = mocker.patch.object(PythonProduct, "configure")
-
+def test_python_install_linter(product: MagicMock, builder: PythonBuilder):
     builder.install_linter()
 
-    assert product_install.call_count == 2
-    assert product_install.call_args_list == [
-        mocker.call("pylint", dev=True),
-        mocker.call("mypy", dev=True),
-    ]
-
-    assert product_configure.call_count == 1
-    assert "pylint" in product_configure.call_args.args
+    assert len(product.method_calls) == 3
+    assert product.method_calls[0] == call.install("pylint", dev=True)
+    assert product.method_calls[1] == call.configure("pylint", ANY)
+    assert product.method_calls[2] == call.install("mypy", dev=True)
