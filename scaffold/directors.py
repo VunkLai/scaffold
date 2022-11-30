@@ -27,8 +27,7 @@ class Scaffold(Director):
             self.builder.install_formatter()
             self.builder.install_linter()
             self.builder.install_tester()
-            self.builder.product.commit("feat: initial project")
-            self.builder.product.bump("0.1.0")
+            self.builder.release()
 
     def create_vscode_project(self) -> None:
         if isinstance(self.builder, VSCodeBuilder):

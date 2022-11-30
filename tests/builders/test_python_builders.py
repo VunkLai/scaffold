@@ -27,6 +27,8 @@ def product(mocker: MockerFixture) -> Generator:
     product.attach_mock(mocker.patch.object(PythonProduct, "create"), "create")
     product.attach_mock(mocker.patch.object(PythonProduct, "install"), "install")
     product.attach_mock(mocker.patch.object(PythonProduct, "configure"), "configure")
+    product.attach_mock(mocker.patch.object(PythonProduct, "commit"), "commit")
+    product.attach_mock(mocker.patch.object(PythonProduct, "bump"), "bump")
     yield product
 
 
@@ -76,3 +78,11 @@ def test_python_install_tester(product: MagicMock, builder: PythonBuilder):
 
     assert len(product.method_calls) == 1
     assert product.method_calls[0] == call.install("pytest", dev=True)
+
+
+def test_python_release(product: MagicMock, builder: PythonBuilder):
+    builder.release()
+
+    assert len(product.method_calls) == 2
+    assert product.method_calls[0] == call.commit("feat: initial project")
+    assert product.method_calls[1] == call.bump("0.1.0")

@@ -42,6 +42,10 @@ class PythonBuilder(Builder):
     def install_tester(self) -> None:
         self.product.install("pytest", dev=True)
 
+    def release(self, message: str = "", version: str = "") -> None:
+        self.product.commit(message or "feat: initial project")
+        self.product.bump(version or "0.1.0")
+
 
 class DjangoBuilder(PythonBuilder):
     DJANGO_PROJECT_NAME: str = "server"
@@ -114,3 +118,6 @@ class DjangoBuilder(PythonBuilder):
                 }
             },
         )
+
+    def release(self, message: str = "", version: str = "") -> None:
+        super().release()

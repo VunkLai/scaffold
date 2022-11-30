@@ -28,6 +28,8 @@ def product(mocker: MockerFixture) -> Generator:
     product.attach_mock(mocker.patch.object(PythonProduct, "install"), "install")
     product.attach_mock(mocker.patch.object(PythonProduct, "configure"), "configure")
     product.attach_mock(mocker.patch.object(PythonProduct, "run"), "run")
+    product.attach_mock(mocker.patch.object(PythonProduct, "commit"), "commit")
+    product.attach_mock(mocker.patch.object(PythonProduct, "bump"), "bump")
     yield product
 
 
@@ -105,3 +107,12 @@ def test_django_install_tester(mocker, product: MagicMock, builder: DjangoBuilde
     assert spy.call_count == 1
     assert product.method_calls[1] == call.install("pytest-django", dev=True)
     assert product.method_calls[2] == call.configure("pytest", ANY)
+
+
+def test_django_release(mocker, product: MagicMock, builder: DjangoBuilder):
+    spy = mocker.spy(PythonBuilder, "release")
+
+    builder.release()
+
+    assert len(product.method_calls) == 2
+    assert spy.call_count == 1
