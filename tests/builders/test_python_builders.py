@@ -11,8 +11,6 @@ from scaffold.products import PythonProduct
 
 PROJECT_NAME = "test-python-builder"
 
-IS_DEV = {"dev": True}
-
 
 @pytest.fixture(scope="function")
 def builder() -> Generator:
@@ -71,3 +69,10 @@ def test_python_install_linter(product: MagicMock, builder: PythonBuilder):
     assert product.method_calls[0] == call.install("pylint", dev=True)
     assert product.method_calls[1] == call.configure("pylint", ANY)
     assert product.method_calls[2] == call.install("mypy", dev=True)
+
+
+def test_python_install_tester(product: MagicMock, builder: PythonBuilder):
+    builder.install_tester()
+
+    assert len(product.method_calls) == 1
+    assert product.method_calls[0] == call.install("pytest", dev=True)

@@ -104,7 +104,7 @@ class DjangoBuilder(PythonBuilder):
 
     def install_tester(self) -> None:
         super().install_tester()
-        self.product.install("pytest-django")
+        self.product.install("pytest-django", dev=True)
         self.product.configure(
             "pytest",
             {
